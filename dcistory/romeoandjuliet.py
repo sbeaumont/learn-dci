@@ -1,8 +1,27 @@
 from dci import Role
 from moneytransfer import MoneyTransfer
 
+# -------------------------------------------------- Role base class
+
+class RoleThatCanFindOtherRolePlayers(Role):
+	"""
+	Role class that can look up attributes from an embedded context.
+	This is a way that we could look up other RolePlayers other than 'injection' by the Context.
+	"""
+	
+	def findByName(self, name):
+		"""Returns value of an attribute of context by name."""
+		return getattr(self.__context__, name)
+
+
+# -------------------------------------------------- Context
+
 class RomeoAndJulietPlay():
-	"""This context shows another way to attach Data objects to roles, through setters."""
+	"""
+	A Context setting the stage for a Shakespeare play. Very direct analogy of DCI to acting.
+	
+	This context shows another way to attach Data objects to roles, through setters.
+	"""
 	
 	def setMaleLead(self, actor):
 		self.romeo = Romeo(actor)
@@ -18,12 +37,10 @@ class RomeoAndJulietPlay():
 		print self.juliet.name(), "is a rich girl with", self.juliet.balance, "ducats to her name."
 		
 		self.juliet.whereArtThou("romeo")
+		
 		self.romeo.lendMoneyFrom(self.juliet, 100)
 
-class RoleThatCanFindOtherRolePlayers(Role):
-	def findByName(self, name):
-		"""Returns value of an attribute of context by name. For looking up other roleplayers."""
-		return getattr(self.__context__, name)
+# -------------------------------------------------- Roles
 
 class Romeo(Role):
 	def name(self):
@@ -36,11 +53,10 @@ class Romeo(Role):
 		Note that this will fail if the Data Objects don't have a balance...
 		"""
 		print self.name(), "sayeth: 'Could thou lendeth me the pitiful sum of", amount, "ducats?'"
-		print "'I have so little to my humble name...'"
 		
-		print "And the transfer of funds commenseth..."
 		nested = MoneyTransfer(other, self)
 		nested.transfer(amount)
+		
 		print "'Oh, thank thee! I now have", self.balance, "lovely, shiny ducats to my name!"
 
 class Juliet(RoleThatCanFindOtherRolePlayers):

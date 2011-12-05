@@ -6,11 +6,26 @@ Author: David Byers, Serge Beaumont
 """
 import new
 
-class Data():
-	"""You DON'T have to subclass from this class.
+# -------------------------------------------------- Data
+
+class Data(object):
+	"""
+	You DON'T have to subclass from Data.
+	
 	The standard object() does not have a __dict__ so you can't attach attributes to it.
-	This class is for convenience so you don't have to specify an empty class if you don't want to."""
+	This class is for convenience so you don't have to specify an empty class if you don't want to.
+	"""
 	pass
+	
+class FlexiData(Data):
+	"""
+	Convenience Data class that returns None for any attributes it does not contain.
+	May be useful if you want to "lazy load" your Data Objects with state.
+	"""
+	def __getattr__(self, name):
+		return None
+
+# -------------------------------------------------- Role
 
 class Role(object):
 	"""A Role is a special class that never gets instantiated directly.
@@ -20,11 +35,6 @@ class Role(object):
 	link the new object's dict to the original object's dict."""
 	
 	def __new__(cls, ob, context=None):
-		# Not needed. works without as wel...
-		#if isinstance(ob, Role):
-		#	"Pull out the root object if it's already wrapped in a Role."
-		#	ob = ob.__ob__
-		
 		members = dict(__context__ = context, __ob__ = ob)
 		if hasattr(ob.__class__, '__slots__'):
 			members['__setattr__'] = Role.___setattr
