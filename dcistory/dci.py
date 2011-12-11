@@ -6,6 +6,10 @@ Author: David Byers, Serge Beaumont
 """
 import new
 
+class Context(object):
+	"Just a marker"
+	pass
+
 # -------------------------------------------------- Data
 
 class Data(object):
@@ -71,3 +75,9 @@ class Role(object):
 			return self.__ob__ == other.__ob__
 		else:
 			return self.__ob__ == other
+
+	def __ne__(self, other):
+		if hasattr(other, '__ob__'):
+			return self.__ob__ != other.__ob__
+		else:
+			return self.__ob__ != other
